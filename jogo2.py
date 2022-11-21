@@ -1,5 +1,6 @@
-from enum import Flag,auto
-import enum
+#%%
+from enum import Flag,auto,Enum
+# import enum
 from abc import ABC, abstractmethod
 import rotate_matrix 
 
@@ -11,7 +12,7 @@ class Peca(Flag):
 	FORA_MOVIMAENTACAO = 8 
 	DAMA_BRANCA = BRANCA|DAMA 
 	DAMA_PRETA = PRETA|DAMA 
-class Status(enum):
+class Status(Enum):
 	JOGANDO = 0
 	BRANCA_VENCERAN = 1
 	PRETAS_VENCERAN = 2
@@ -29,10 +30,20 @@ class Player(ABC):
 #     def jogar(self,TABOLEIRO):
 #         pass
 class MiniMax(Player):
-	def jogar(self,TABOLEIRO,Pecas):
-		pass
+	def jogar(self):
+		taboleiro = Taboleiro()
+		taboleiro.movimentosTaboleiro(self.peca)
+	def simulacao():
+		return -1
 
+class Movimento():
+	def __init__(self,posicaoInicial,posicaoFinal,posicaoCedulaPulada=None,isObrigatorio=False):
+		self.posicaoInicial = posicaoInicial
+		self.posicaoFinal = posicaoFinal
+		self.posicaoCedulaPulada = posicaoCedulaPulada
+		self.isObrigatorio = isObrigatorio
 class Taboleiro:
+
 	# Classe para tomar conta do status do jogo
 	def __init__(self):
 		self.status = Status.JOGANDO
@@ -43,32 +54,45 @@ class Taboleiro:
 								[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA],
 				  				[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
-								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA],
 								[Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA]
 								]
 		self.sentidoTaboleiro = Peca.BRANCA
 
-	
 	# RETORNA OS MOVIMENTOS OBRIGATÓRIOS DE UMA PEÇA QUE PODE SER JOGADA EM DETERMINADO TURNO
 	# rotacionando tabuleiro 
 	def rotacionarTabuleiro(self,sentidoTaboleiro):
 		if self.sentidoTaboleiro == sentidoTaboleiro:
 			self.matrizTaboleiro = rotate_matrix.clockwise(rotate_matrix.clockwise(self.matrizTaboleiro))
 			self.sentidoTaboleiro = self.sentidoTaboleiro == Peca.BRANCA if Peca.PRETA else Peca.BRANCA
-	def movimento_obrigatorio_celula(self, localizacao_cedula):
-		obrigatorios = []
-		posicao_cedula_pulada = []
-
+	
+	def jogadorTurno(self):
+		return self.jogadores[self.turno % 2]
+	
+	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UM TURNO
+	def movimentosTaboleiro(self):
+		return self.movimentosTaboleiro(self.jogadorTurno())
+	def movimentosTaboleiro(self,peca):
+		retorno = []
+		for i in range(self.matrizTaboleiro.__len__()-1):
+			for e in range(self.matrizTaboleiro[0].__len__()-1):
+				aux = self.movimentoObrigatorioCelula((i,e),peca)
+				if aux != None:
+					retorno.append(aux)
+		return retorno
+	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UMa celula
+	def movimentoCelula(self, localizacao_cedula,peca):
+		movimentos =[]
 		linha,coluna = localizacao_cedula
 		
-		jogador = self.jogadores[self.turno % 2]
-		self.rotacionarTabuleiro(jogador.peca)
-		array = [Peca.ESPAÇO_VAZIO,jogador.peca]
+
+		self.rotacionarTabuleiro(peca)
+		array = [Peca.ESPAÇO_VAZIO,peca]
 		# logica para quando a posicao selecionada e uma peça do jogador e nao e uma dama 
-		if self.matrizTaboleiro[linha][coluna] == jogador.peca and self.matrizTaboleiro[linha][coluna] != Peca.DAMA:
+		if self.matrizTaboleiro[linha][coluna] == peca and self.matrizTaboleiro[linha][coluna] != Peca.DAMA:
 				if linha > 0:
 					if coluna < self.matrizTaboleiro[0].__len__():
 						if self.matrizTaboleiro[linha - 1][coluna + 1] not in array :
@@ -77,8 +101,21 @@ class Taboleiro:
 
 							if linhaPulada - 1 >= 0 and colunaPulada + 1 <= self.matrizTaboleiro[0].__len__():
 								if self.matrizTaboleiro[linhaPulada - 1][colunaPulada + 1] == Peca.ESPAÇO_VAZIO:
-									obrigatorios.append([linhaPulada - 1, colunaPulada + 1])
-									posicao_cedula_pulada.append([linhaPulada, colunaPulada])
+									movimento = Movimento(
+										posicaoInicial = [linha,coluna],
+										posicaoFinal = [linhaPulada - 1, colunaPulada + 1],
+										posicaoCedulaPulada = [linhaPulada, colunaPulada],
+										isObrigatorio = True
+										)
+									movimentos.append(movimento)
+						elif self.matrizTaboleiro[linha - 1][coluna + 1] == Peca.ESPAÇO_VAZIO:
+							movimento = Movimento(
+								posicaoInicial = [linha,coluna],
+								posicaoFinal = [linha - 1,coluna + 1],
+								posicaoCedulaPulada = None,
+								isObrigatorio = False
+							)
+							movimentos.append(movimento)
 					if coluna > 0:
 						if self.matrizTaboleiro[linha - 1][coluna - 1] not in array:
 							linhaPulada = linha - 1
@@ -86,124 +123,33 @@ class Taboleiro:
 
 							if linhaPulada - 1 >= 0 and colunaPulada - 1 >= 0:
 								if self.matrizTaboleiro[linhaPulada - 1][colunaPulada - 1] == Peca.ESPAÇO_VAZIO:
-									obrigatorios.append([linhaPulada - 1, colunaPulada - 1])
-									posicao_cedula_pulada.append([linhaPulada, colunaPulada])
-				if linha < self.matrizTaboleiro.__len__():
-					if coluna < self.matrizTaboleiro[0].__len__():
-						if self.matrizTaboleiro[linha + 1][coluna + 1] not in array:
-							linhaPulada = linha + 1
-							colunaPulada = coluna + 1
+									movimento = Movimento(
+										posicaoInicial = [linha,coluna],
+										posicaoFinal = [linhaPulada - 1, colunaPulada - 1],
+										posicaoCedulaPulada = [linhaPulada, colunaPulada],
+										isObrigatorio = False
+									)
+									movimentos.append(movimento)
+						elif self.matrizTaboleiro[linha - 1][coluna - 1] == Peca.ESPAÇO_VAZIO:
+							movimento = Movimento(
+								posicaoInicial = [linha,coluna],
+								posicaoFinal = [linha - 1,coluna - 1],
+								posicaoCedulaPulada = None,
+								isObrigatorio = False
+							)
+							movimentos.append(movimento)
+		if movimentos != []:
+			return movimentos
+		else:
+			return None
 
-							if linhaPulada + 1 <= self.matrizTaboleiro.__len__() and colunaPulada + 1 <= self.matrizTaboleiro[0].__len__():
-								if self.matrizTaboleiro[linhaPulada + 1][colunaPulada + 1] == Peca.ESPAÇO_VAZIO:
-									obrigatorios.append([linhaPulada + 1, colunaPulada + 1])
-									posicao_cedula_pulada.append((linhaPulada, colunaPulada))
-					if coluna > 0:
-						if self.matrizTaboleiro[linha + 1][coluna - 1] not in array:
-							linhaPulada = linha + 1
-							colunaPulada = coluna - 1
-
-							if linhaPulada + 1 <= self.matrizTaboleiro.__len__() and colunaPulada - 1 >= 0:
-								if self.matrizTaboleiro[linhaPulada + 1][colunaPulada - 1] == Peca.ESPAÇO_VAZIO:
-									obrigatorios.append([linhaPulada + 1, colunaPulada - 1])
-									posicao_cedula_pulada.append((linhaPulada, colunaPulada))
-
-		return obrigatorios, posicao_cedula_pulada
-
-	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UM TURNO
-	def todos_obrigatorios(self):
-		todos = (()())
-
-		for r in range(len(self.matrizTaboleiro)):
-			for c in range(len(self.matrizTaboleiro[r])):
-				ob, pulos = self.movimento_obrigatorio((r, c))
-				if  ob != []:
-					todos[(r, c)] = ob
-
-		return todos
-		
 	# RETORNA SE EXISTE UM MOVIMENTO POSSIVEL A SE FAZER COM A PEÇA
-	def existe_possivel(self):
-		for l in range(len(self.matrizTaboleiro)):
-			for c in range(len(self.matrizTaboleiro[l])):
-				if self.movimentos_possiveis((l, c))[0]:
-					return True
-		return False
-
-
-	# MOSTRA OS MOVIMENTOS POSSÍVEIS DE UMA PEÇA 
-	def movimentos_possiveis(self, localizacao_cedula):
-		movimentos, pulos = self.movimento_obrigatorio(localizacao_cedula)
-
-		if movimentos == []:
-			linha_atual = localizacao_cedula[0]
-			coluna_atual = localizacao_cedula[1]
-
-			if self.matrizTaboleiro[linha_atual][coluna_atual].islower():
-				if self.matrizTaboleiro[linha_atual][coluna_atual] == Peca.BRANCA:
-					if linha_atual > 0:
-						if coluna_atual < 7:
-							if self.matrizTaboleiro[linha_atual - 1][coluna_atual + 1] == Peca.ESPAÇO_VAZIO:
-								movimentos.append([linha_atual - 1, coluna_atual + 1])
-						if coluna_atual > 0:
-							if self.matrizTaboleiro[linha_atual - 1][coluna_atual - 1] == Peca.ESPAÇO_VAZIO:
-								movimentos.append([linha_atual - 1, coluna_atual - 1])
-				
-				elif self.matrizTaboleiro[linha_atual][coluna_atual] == Peca.PRETA:
-					if linha_atual < 7:
-						if coluna_atual < 7:
-							if self.matrizTaboleiro[linha_atual + 1][coluna_atual + 1] == Peca.ESPAÇO_VAZIO:
-								movimentos.append([linha_atual + 1, coluna_atual + 1])
-						if coluna_atual > 0:
-							if self.matrizTaboleiro[linha_atual + 1][coluna_atual - 1] == Peca.ESPAÇO_VAZIO:
-								movimentos.append([linha_atual + 1, coluna_atual - 1])
-			elif self.matrizTaboleiro[linha_atual][coluna_atual].isupper():
-				conta_linha = linha_atual
-				conta_coluna = coluna_atual
-				while True:
-					if conta_linha - 1 < 0 or conta_coluna - 1 < 0: break
-					else:
-						if self.matrizTaboleiro[conta_linha - 1][conta_coluna - 1] == Peca.ESPAÇO_VAZIO:
-							movimentos.append([conta_linha - 1, conta_coluna - 1])
-						else: break
-					conta_linha -= 1
-					conta_coluna -= 1
-
-				conta_linha = linha_atual
-				conta_coluna = coluna_atual
-				while True:
-					if conta_linha - 1 < 0 or conta_coluna + 1 > 7: break
-					else:
-						if self.matrizTaboleiro[conta_linha - 1][conta_coluna + 1] == Peca.ESPAÇO_VAZIO:
-							movimentos.append([conta_linha - 1, conta_coluna + 1])
-						else: break
-					conta_linha -= 1
-					conta_coluna += 1
-
-				conta_linha = linha_atual
-				conta_coluna = coluna_atual
-				while True:
-					if conta_linha + 1 > 7 or conta_coluna + 1 > 7: break
-					else:
-						if self.matrizTaboleiro[conta_linha + 1][conta_coluna + 1] == Peca.ESPAÇO_VAZIO:
-							movimentos.append([conta_linha + 1, conta_coluna + 1])
-						else: break
-					conta_linha += 1
-					conta_coluna += 1
-
-				conta_linha = linha_atual
-				conta_coluna = coluna_atual
-				while True:
-					if conta_linha + 1 > 7 or conta_coluna - 1 < 0: break
-					else:
-						if self.matrizTaboleiro[conta_linha + 1][conta_coluna - 1] == Peca.ESPAÇO_VAZIO:
-							movimentos.append([conta_linha + 1, conta_coluna - 1])
-						else: break
-					conta_linha += 1
-					conta_coluna -= 1
-				
-		return movimentos, pulos
-
+	def existeMovimentoPossivel(self,peca):
+		if self.movimentosTaboleiro(peca).__len__() == 0 :
+			return False
+		else:
+			return True
+	# def execultarMovimento(self,movimento):
 
 
 	# PRÓXIMO TURNO
@@ -213,27 +159,24 @@ class Taboleiro:
 	# VERIFICA O VENCEDOR
 	def verifica_vencedor(self):
 
-		x = sum([contador.count(Peca.PRETA) + contador.count(Peca.PRETA) for contador in self.matrizTaboleiro])
-		o = sum([contador.count(Peca.BRANCA) + contador.count(Peca.BRANCA) for contador in self.matrizTaboleiro])
+		PecasPreta = sum([contador.count(Peca.PRETA) for contador in self.matrizTaboleiro])
+		pecasBrancas = sum([contador.count(Peca.BRANCA) for contador in self.matrizTaboleiro])
 
-		if x == 0:
-			return Peca.BRANCA
+		if PecasPreta == 0:
+			return Status.BRANCA_VENCERAN
+		if pecasBrancas == 0:
+			return Status.PRETAS_VENCERAN
+		if self.existeMovimentoPossivel(Peca.BRANCA) and not self.existeMovimentoPossivel(Peca.BRANCA):
+			return Status.BRANCA_VENCERAN
+		if not self.existeMovimentoPossivel(Peca.BRANCA) and  self.existeMovimentoPossivel(Peca.BRANCA):
+			return Status.PRETAS_VENCERAN
+		if not self.existeMovimentoPossivel(Peca.BRANCA) and not self.existeMovimentoPossivel(Peca.BRANCA):
+			return Status.EMPATE
+		if PecasPreta == 1 and pecasBrancas == 1:
+			return Status.EMPATE
+		return Status.JOGANDO
 
-		if o == 0:
-			return Peca.PRETA
-
-		if x == 1 and o == 1:
-			return 'Empate'
-
-		if self.cedula_selecionada:
-			if not self.movimentos_possiveis(self.cedula_selecionada)[0]:
-				if x == 1 and self.turno % 2 == 0:
-					return  Status.br
-				if o == 1 and self.turno % 2 == 1:
-					return Peca.PRETA
-
-		if not self.existe_possivel():
-			return 'Empate'
-
-
-		return None
+#%%
+tab = Taboleiro()
+#%%
+tab.movimentosObrigatorio()
