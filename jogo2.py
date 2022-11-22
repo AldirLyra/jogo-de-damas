@@ -2,6 +2,7 @@
 from enum import Flag,auto,Enum
 # import enum
 from abc import ABC, abstractmethod
+from IPython.display import display
 import rotate_matrix 
 
 class Peca(Flag):
@@ -42,6 +43,14 @@ class Movimento():
 		self.posicaoFinal = posicaoFinal
 		self.posicaoCedulaPulada = posicaoCedulaPulada
 		self.isObrigatorio = isObrigatorio
+	def imprimir(self):
+		movimentostr = "\n"
+		movimentostr += "posicaoInicial:"+ str(self.posicaoInicial) +"\n"
+		movimentostr += "posicaoCedulaPulada:"+ str(self.posicaoCedulaPulada )+"\n"
+		movimentostr += "posicaoFinal:"+ str(self.posicaoFinal) +"\n"
+		return movimentostr
+		
+		
 class Taboleiro:
 
 	# Classe para tomar conta do status do jogo
@@ -67,21 +76,23 @@ class Taboleiro:
 	def rotacionarTabuleiro(self,sentidoTaboleiro):
 		if self.sentidoTaboleiro == sentidoTaboleiro:
 			self.matrizTaboleiro = rotate_matrix.clockwise(rotate_matrix.clockwise(self.matrizTaboleiro))
-			self.sentidoTaboleiro = self.sentidoTaboleiro == Peca.BRANCA if Peca.PRETA else Peca.BRANCA
+			# self.sentidoTaboleiro = self.sentidoTaboleiro == Peca.BRANCA if Peca.PRETA else Peca.BRANCA
+			self.sentidoTaboleiro = sentidoTaboleiro
 	
 	def jogadorTurno(self):
 		return self.jogadores[self.turno % 2]
 	
 	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UM TURNO
-	def movimentosTaboleiro(self):
+	def movimentosTaboleiro2(self):
 		return self.movimentosTaboleiro(self.jogadorTurno())
+	
 	def movimentosTaboleiro(self,peca):
 		retorno = []
 		for i in range(self.matrizTaboleiro.__len__()-1):
 			for e in range(self.matrizTaboleiro[0].__len__()-1):
-				aux = self.movimentoObrigatorioCelula((i,e),peca)
+				aux = self.movimentoCelula((i,e),peca)
 				if aux != None:
-					retorno.append(aux)
+					retorno.extend(aux)
 		return retorno
 	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UMa celula
 	def movimentoCelula(self, localizacao_cedula,peca):
@@ -161,7 +172,7 @@ class Taboleiro:
 				elif e == Peca.PRETA :
 					tabstr += "|◉|"
 				elif e == Peca.ESPAÇO_VAZIO:
-					tabstr += "| |"
+					tabstr += "|  |"
 			tabstr += "\n"
 		return tabstr
 
@@ -193,4 +204,18 @@ class Taboleiro:
 tab = Taboleiro()
 #%%
 print(tab.ImprimirTaboleiro())
+test = tab.movimentosTaboleiro(Peca.BRANCA)
+map(lambda x : print(x.imprimir()) ,tab.movimentosTaboleiro(Peca.BRANCA))
+print(tab.ImprimirTaboleiro())
 
+# display(tab.movimentosTaboleiro(Peca.PRETA).map)
+# print(tab.ImprimirTaboleiro())
+# display(tab.movimentosTaboleiro(Peca.BRANCA))
+
+
+
+# %%
+for i in tab.movimentosTaboleiro(Peca.BRANCA):
+	print(i.imprimir())
+
+# %%
