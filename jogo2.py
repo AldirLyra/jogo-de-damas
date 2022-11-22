@@ -151,13 +151,26 @@ class Taboleiro:
 			return True
 	# def execultarMovimento(self,movimento):
 
+	# 
+	def ImprimirTaboleiro(self):
+		tabstr = ""
+		for i in self.matrizTaboleiro:
+			for e in i:
+				if e == Peca.BRANCA :
+					tabstr += "|◎|"
+				elif e == Peca.PRETA :
+					tabstr += "|◉|"
+				elif e == Peca.ESPAÇO_VAZIO:
+					tabstr += "| |"
+			tabstr += "\n"
+		return tabstr
 
 	# PRÓXIMO TURNO
-	def proximo_turno(self):
+	def proximoTurno(self):
 		self.turno += 1
 
 	# VERIFICA O VENCEDOR
-	def verifica_vencedor(self):
+	def verificaVencedor(self):
 
 		PecasPreta = sum([contador.count(Peca.PRETA) for contador in self.matrizTaboleiro])
 		pecasBrancas = sum([contador.count(Peca.BRANCA) for contador in self.matrizTaboleiro])
@@ -179,4 +192,5 @@ class Taboleiro:
 #%%
 tab = Taboleiro()
 #%%
-tab.movimentosObrigatorio()
+print(tab.ImprimirTaboleiro())
+
