@@ -234,11 +234,11 @@ class Taboleiro:
 		for i in self.matrizTaboleiro:
 			for e in i:
 				if e == Peca.BRANCA :
-					tabstr += "|◎|"
+					tabstr += "| ○ |"
 				elif e == Peca.PRETA :
-					tabstr += "|◉|"
+					tabstr += "| ● |"
 				elif e == Peca.ESPAÇO_VAZIO:
-					tabstr += "|  |"
+					tabstr += "|   |"
 			tabstr += "\n"
 		return tabstr
 
