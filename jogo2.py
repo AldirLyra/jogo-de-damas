@@ -52,7 +52,8 @@ class MiniMax(Player):
 		pt , movimento = self.simulacao(self.taboleiro,self.peca,self.peca)
 		movimento.moverPeca(self.taboleiro,self.peca)
 	def simulacao(self,taboleiro,pecaTurno,peca):
-		# taboleiro = Taboleiro()
+		#taboleiro = Taboleiro()
+		taboleiro.verificaVencedor()
 		if taboleiro.status == Status.BRANCA_VENCERAN :
 			if peca == Peca.BRANCA:
 				return 1
@@ -68,7 +69,7 @@ class MiniMax(Player):
 		
 		pontuacao = 0
 		maiorPt = 0 
-		melhorMov 
+		melhorMov = False
 		movimentos = taboleiro.movimentosTaboleiro(pecaTurno)
 		for movimento in movimentos:
 			taboleiroSimu = copy(taboleiro)
@@ -119,7 +120,7 @@ class Taboleiro:
 								[Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA],
 				  				[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA],
 								[Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA]
@@ -173,13 +174,13 @@ class Taboleiro:
 		# logica para quando a posicao selecionada e uma peça do jogador e nao e uma dama 
 		if self.matrizTaboleiro[linha][coluna] == peca :
 				if linha > 0:
-					if coluna < self.matrizTaboleiro[0].__len__():
+					if coluna < self.matrizTaboleiro[0].__len__() - 1:
 						# logica da peça comun
 						if self.matrizTaboleiro[linha - 1][coluna + 1] not in array :
 							linhaPulada = linha - 1
 							colunaPulada = coluna + 1
 
-							if linhaPulada - 1 >= 0 and colunaPulada + 1 <= self.matrizTaboleiro[0].__len__():
+							if linhaPulada - 1 >= 0 and colunaPulada + 1 <= self.matrizTaboleiro[0].__len__()-1:
 								if self.matrizTaboleiro[linhaPulada - 1][colunaPulada + 1] == Peca.ESPAÇO_VAZIO:
 									movimento = Movimento(
 										posicaoInicial = [linha,coluna],
@@ -202,7 +203,7 @@ class Taboleiro:
 								linhaPulada = linha + 1
 								colunaPulada = coluna + 1
 
-								if linhaPulada + 1 >= self.matrizTaboleiro.__len__()-1 and colunaPulada + 1 <= self.matrizTaboleiro[0].__len__():
+								if linhaPulada + 1 >= self.matrizTaboleiro.__len__()-1 and colunaPulada + 1 <= self.matrizTaboleiro[0].__len__()-1:
 									if self.matrizTaboleiro[linhaPulada + 1][colunaPulada + 1] == Peca.ESPAÇO_VAZIO:
 										movimento = Movimento(
 											posicaoInicial = [linha,coluna],
