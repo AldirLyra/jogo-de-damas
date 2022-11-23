@@ -25,10 +25,19 @@ class Player(ABC):
 	def jogar(self):
 		pass
 class Humano(Player):
-    def jogar(self):
-        pass
-    
-    
+	def jogar(self):
+		pass
+	
+	def efetuarJogada(self):
+		movimentos = self.taboleiro.movimentosTaboleiro(self.peca)   
+		print("escolha algum dos seguintes movimentos :\n")
+		for i in range(movimentos.__len__()):
+			movimento = movimentos[i]
+			print("======="+i+"=======")
+			movimento.imprimir()
+		indice = int(input("digite o indice do movimento:"))
+		return movimentos[indice].moverPeca(self.taboleiro,self.peca)		
+	
 # class RedeNeural(Player):
 #     def jogar(self,TABOLEIRO):
 #         pass
@@ -268,6 +277,7 @@ class Taboleiro:
 		return Status.JOGANDO
 #%%
 tab = Taboleiro()
+mover = Humano()
 # %%
 
 print(tab.movimentosTaboleiro(Peca.BRANCA)[0].imprimir() )
@@ -289,4 +299,7 @@ print(tab.sentidoTaboleiro)
 tab.rotacionarTabuleiro(Peca.PRETA)
 print(tab.toString())
 print(tab.sentidoTaboleiro)
+# %%
+mover.efetuarJogada()
+
 # %%
