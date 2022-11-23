@@ -31,10 +31,8 @@ class Humano(Player):
 		self.efetuarJogada()
 	
 	def efetuarJogada(self):
-		movimentos = self.taboleiro.movimentosTaboleiro(self.peca)
-		movimentosObrigatorios = Seq(movimentos).filter(lambda x: x.isObrigatorio == True).tolist()
-		if movimentosObrigatorios.__len__() != 0:
-			movimentos = movimentosObrigatorios
+		movimentos = Movimento.filtraPorObrigatorio(movimentos)
+		
 		print("escolha algum dos seguintes movimentos :\n")
 		for i in range(movimentos.__len__()):
 			movimento = movimentos[i]
@@ -49,9 +47,9 @@ class Humano(Player):
 class MiniMax(Player):
 	def jogar(self):
 		# taboleiro = Taboleiro()
-		pt , movimento = self.simulacao(self.taboleiro,self.peca,self.peca)
+		_,movimento = MiniMax.simulacao(self.taboleiro,self.peca,self.peca)
 		movimento.moverPeca(self.taboleiro,self.peca)
-	def simulacao(self,taboleiro,pecaTurno,peca):
+	def simulacao(taboleiro,pecaTurno,peca):
 		#taboleiro = Taboleiro()
 		taboleiro.verificaVencedor()
 		if taboleiro.status == Status.BRANCA_VENCERAN :
@@ -70,14 +68,15 @@ class MiniMax(Player):
 		pontuacao = 0
 		maiorPt = 0 
 		melhorMov = None
-		movimentos = taboleiro.movimentosTaboleiro(pecaTurno)
+		movimentos = movimentos = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
 		for movimento in movimentos:
 			taboleiroSimu = copy(taboleiro)
 			movimento.moverPeca(taboleiroSimu,pecaTurno)
 			if movimento.isObrigatorio:
 				pontuacao +=10	
+			
 			pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
-			pontuacaoMov,mov = self.simulacao(taboleiroSimu,pecaTurno,peca)
+			pontuacaoMov,mov = MiniMax.simulacao(taboleiroSimu,pecaTurno,peca)
 			if pontuacaoMov > maiorPt:
 				melhorMov = movimento
 			elif maiorPt == 0:
@@ -112,7 +111,12 @@ class Movimento():
 		lilhaF,colunaF = self.posicaoFinal
 		taboleiro.matrizTaboleiro[lilhaF][colunaF] = peca
 
-
+	def filtraPorObrigatorio(movimentos):
+		movimentosObrigatorios = Seq(movimentos).filter(lambda x: x.isObrigatorio == True).tolist()
+		if movimentosObrigatorios.__len__() != 0:
+			return movimentosObrigatorios
+		else :
+			return movimentos
 		
 #%%	
 class Taboleiro:
