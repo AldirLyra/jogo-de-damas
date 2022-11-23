@@ -34,12 +34,16 @@ class Humano(Player):
 		self.efetuarJogada()
 	
 	def efetuarJogada(self):
-		movimentos = Movimento.filtraPorObrigatorio(movimentos)
+		movimentos,isMovObrigatorio = Movimento.filtraPorObrigatorio(self.taboleiro.movimentosTaboleiro(self.peca))
 		
 		print("escolha algum dos seguintes movimentos :\n")
 		Movimento.imprimirMovs(movimentos)
 		indice = int(input("digite o indice do movimento:"))
-		movimentos[indice].moverPeca(self.taboleiro,self.peca)		
+		movimentos[indice].moverPeca(self.taboleiro,self.peca)	
+		movimentos,isMovObrigatorioP = Movimento.filtraPorObrigatorio(self.taboleiro.movimentosTaboleiro(self.peca))
+		
+		if isMovObrigatorio and isMovObrigatorioP:
+			self.efetuarJogada()	
 # class RedeNeural(Player):
 #     def jogar(self,TABOLEIRO):
 #         pass
@@ -67,14 +71,18 @@ class MiniMax(Player):
 		pontuacao = 0
 		maiorPt = 0 
 		melhorMov = None
-		movimentos = movimentos = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
+		movimentos,isMovObrigatorio = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
 		for movimento in movimentos:
 			taboleiroSimu = copy(taboleiro)
 			movimento.moverPeca(taboleiroSimu,pecaTurno)
-			if movimento.isObrigatorio:
-				pontuacao +=10	
-			
-			pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
+			if isMovObrigatorio :
+				if pecaTurno == peca:
+					pontuacao +=10
+				else:
+					pontuacao -=10
+			movimentos,isMovObrigatoriop = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
+			if not(isMovObrigatorio and isMovObrigatoriop): 
+				pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
 			pontuacaoMov,_ = MiniMax.simulacao(taboleiroSimu,pecaTurno,peca)
 			if pontuacaoMov > maiorPt:
 				melhorMov = movimento
@@ -113,9 +121,9 @@ class Movimento():
 	def filtraPorObrigatorio(movimentos):
 		movimentosObrigatorios = Seq(movimentos).filter(lambda x: x.isObrigatorio == True).tolist()
 		if movimentosObrigatorios.__len__() != 0:
-			return movimentosObrigatorios
+			return movimentosObrigatorios,True
 		else :
-			return movimentos
+			return movimentos,False
 	def imprimirMovs(movimentos):
 		for i in range(movimentos.__len__()):
 			movimento = movimentos[i]
@@ -340,11 +348,11 @@ class Taboleiro:
 		return self.status
 #%%
 tab = Taboleiro()
-tab.jogadores[0] = Humano(tab,tab.jogadores[0].peca)
-tab.jogadores[1] = MiniMax(tab,tab.jogadores[1].peca)
+tab.jogadores[0] = MiniMax(tab,tab.jogadores[0].peca)
+tab.jogadores[1] = Humano(tab,tab.jogadores[1].peca)
 
-Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.PRETA))
-Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.BRANCA))
+# Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.PRETA))
+# Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.BRANCA))
 #%%
 tab.jogo()
 
