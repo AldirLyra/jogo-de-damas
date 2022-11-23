@@ -18,17 +18,26 @@ class Status(Enum):
 	BRANCA_VENCERAN = 1
 	PRETAS_VENCERAN = 2
 	EMPATE = 3
-class Player(ABC):
+class Player():
 	def __init__(self,taboleiro,peca):
 		self.taboleiro = taboleiro
 		self.peca = peca
-	def jogar(self):
-		pass
+	
 class Humano(Player):
-    def jogar(self):
-        pass
-    
-    
+	# overriding abstract method
+	def jogar(self):
+		self.efetuarJogada()
+	
+	def efetuarJogada(self):
+		movimentos = self.taboleiro.movimentosTaboleiro(self.peca)   
+		print("escolha algum dos seguintes movimentos :\n")
+		for i in range(movimentos.__len__()):
+			movimento = movimentos[i]
+			print("======="+str(i)+"=======")
+			print(movimento.imprimir())
+		indice = int(input("digite o indice do movimento:"))
+		movimentos[indice].moverPeca(self.taboleiro,self.peca)		
+	
 # class RedeNeural(Player):
 #     def jogar(self,TABOLEIRO):
 #         pass
@@ -72,7 +81,7 @@ class Taboleiro:
 	def __init__(self):
 		self.status = Status.JOGANDO
 		self.turno = 1
-		self.jogadores = (Player(self,Peca.PRETA), Player(self,Peca.BRANCA))
+		self.jogadores = [Player(self,Peca.PRETA), Player(self,Peca.BRANCA)]
 		
 		self.matrizTaboleiro = [
 								[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
@@ -85,7 +94,18 @@ class Taboleiro:
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA]
 								]
 		self.sentidoTaboleiro = Peca.BRANCA
+	def jogo(self):
+		while True:
+			jogador = self.jogadorTurno()
+			print(jogador.__class__)
+			print(jogador.peca.name)
 
+			print(self.toString())
+			jogador.jogar()
+			self.proximoTurno()
+			self.verificaVencedor()
+			if self.status != Status.JOGANDO:
+				return None
 	# RETORNA OS MOVIMENTOS OBRIGATÓRIOS DE UMA PEÇA QUE PODE SER JOGADA EM DETERMINADO TURNO
 	# rotacionando tabuleiro 
 	def rotacionarTabuleiro(self,sentido):
@@ -229,7 +249,7 @@ class Taboleiro:
 			return True
 	# def execultarMovimento(self,movimento):
 
-	# 
+	# retorna uma string do taboleiro
 	def toString(self):
 		tabstr = "  | 0 || 1 || 2 || 3 || 4 || 5 || 6 || 7 |\n"
 		
@@ -257,39 +277,47 @@ class Taboleiro:
 		pecasBrancas = sum([contador.count(Peca.BRANCA) for contador in self.matrizTaboleiro])
 
 		if PecasPreta == 0:
-			return Status.BRANCA_VENCERAN
+			self.status = Status.BRANCA_VENCERAN
 		if pecasBrancas == 0:
-			return Status.PRETAS_VENCERAN
+			self.status =Status.PRETAS_VENCERAN
 		if self.existeMovimentoPossivel(Peca.BRANCA) and not self.existeMovimentoPossivel(Peca.PRETA):
-			return Status.BRANCA_VENCERAN
+			self.status =Status.BRANCA_VENCERAN
 		if not self.existeMovimentoPossivel(Peca.BRANCA) and  self.existeMovimentoPossivel(Peca.PRETA):
-			return Status.PRETAS_VENCERAN
+			self.status =Status.PRETAS_VENCERAN
 		if not self.existeMovimentoPossivel(Peca.BRANCA) and not self.existeMovimentoPossivel(Peca.BRANCA):
-			return Status.EMPATE
+			self.status =Status.EMPATE
 		if PecasPreta == 1 and pecasBrancas == 1:
-			return Status.EMPATE
-		return Status.JOGANDO
+			self.status =Status.EMPATE
+		self.status = Status.JOGANDO
 #%%
 tab = Taboleiro()
+tab.jogadores[0] = Humano(tab,tab.jogadores[0].peca)
+tab.jogadores[1] = Humano(tab,tab.jogadores[1].peca)
+
+tab.jogo()
+
 # %%
 
-print(tab.movimentosTaboleiro(Peca.BRANCA)[0].imprimir() )
-tab.rotacionarTabuleiro(Peca.BRANCA)
-print(tab.toString())
-tab.movimentosTaboleiro(Peca.BRANCA)[0].moverPeca(tab,Peca.BRANCA)
-tab.rotacionarTabuleiro(Peca.BRANCA)
-print(tab.toString())
-# %%
+# print(tab.movimentosTaboleiro(Peca.BRANCA)[0].imprimir() )
+# tab.rotacionarTabuleiro(Peca.BRANCA)
+# print(tab.toString())
+# tab.movimentosTaboleiro(Peca.BRANCA)[0].moverPeca(tab,Peca.BRANCA)
+# tab.rotacionarTabuleiro(Peca.BRANCA)
+# print(tab.toString())
+# # %%
 
-tab.rotacionarTabuleiro(Peca.BRANCA)
-print(tab.toString())
-print(tab.sentidoTaboleiro)
+# tab.rotacionarTabuleiro(Peca.BRANCA)
+# print(tab.toString())
+# print(tab.sentidoTaboleiro)
 
-tab.rotacionarTabuleiro(Peca.BRANCA)
-print(tab.toString())
-print(tab.sentidoTaboleiro)
+# tab.rotacionarTabuleiro(Peca.BRANCA)
+# print(tab.toString())
+# print(tab.sentidoTaboleiro)
 
-tab.rotacionarTabuleiro(Peca.PRETA)
-print(tab.toString())
-print(tab.sentidoTaboleiro)
+# tab.rotacionarTabuleiro(Peca.PRETA)
+# print(tab.toString())
+# print(tab.sentidoTaboleiro)
+# # %%
+# mover.efetuarJogada()
+
 # %%
