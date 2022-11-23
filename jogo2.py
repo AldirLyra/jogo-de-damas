@@ -231,9 +231,12 @@ class Taboleiro:
 
 	# 
 	def toString(self):
-		tabstr = ""
-		for i in self.matrizTaboleiro:
-			for e in i:
+		tabstr = "  | 0 || 1 || 2 || 3 || 4 || 5 || 6 || 7 |\n"
+		
+		for linhaI in range(self.matrizTaboleiro.__len__()):
+			linha = self.matrizTaboleiro[linhaI]
+			tabstr += str(linhaI)+" " 
+			for e in linha:
 				if e == Peca.BRANCA :
 					tabstr += "| ○ |"
 				elif e == Peca.PRETA :
