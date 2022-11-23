@@ -49,9 +49,10 @@ class Humano(Player):
 class MiniMax(Player):
 	def jogar(self):
 		taboleiro = Taboleiro()
-		taboleiro.movimentosTaboleiro(self.peca)
+		pt , movimento = self.simulacao(self.taboleiro,self.peca,self.peca)
+		movimento.moverPeca(self.taboleiro,self.peca)
 	def simulacao(self,taboleiro,pecaTurno,peca):
-		taboleiro = Taboleiro()
+		# taboleiro = Taboleiro()
 		if taboleiro.status == Status.BRANCA_VENCERAN :
 			if peca == Peca.BRANCA:
 				return 1
@@ -67,16 +68,17 @@ class MiniMax(Player):
 		
 		pontuacao = 0
 		maiorPt = 0 
-		melhorMov = None
+		melhorMov 
 		movimentos = taboleiro.movimentosTaboleiro(pecaTurno)
 		for movimento in movimentos:
 			taboleiroSimu = copy(taboleiro)
 			movimento.moverPeca(taboleiroSimu,pecaTurno)
 			pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
-			pontuacaoMov = self.simulacao(taboleiroSimu,pecaTurno,peca)
+			pontuacaoMov,mov = self.simulacao(taboleiroSimu,pecaTurno,peca)
 			if pontuacaoMov > maiorPt:
 				melhorMov = movimento
-		return pontuacaoMov, mov	
+			pontuacao += pontuacaoMov
+		return pontuacao, melhorMov	
 #%%	
 class Movimento():
 	def __init__(self,posicaoInicial,posicaoFinal,posicaoCedulaPulada=None,isObrigatorio=False):
@@ -321,7 +323,7 @@ class Taboleiro:
 #%%
 tab = Taboleiro()
 tab.jogadores[0] = Humano(tab,tab.jogadores[0].peca)
-tab.jogadores[1] = Humano(tab,tab.jogadores[1].peca)
+tab.jogadores[1] = MiniMax(tab,tab.jogadores[1].peca)
 
 tab.jogo()
 
