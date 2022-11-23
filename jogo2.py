@@ -1,4 +1,6 @@
-#%%
+
+#realizando inports nessesarios
+#%% 
 from enum import Flag,auto,Enum
 from copy import copy
 # import enum
@@ -6,6 +8,7 @@ from abc import ABC, abstractmethod
 from IPython.display import display
 import rotate_matrix 
 from infixpy import Seq
+#%%
 
 class Peca(Flag):
 	ESPAÇO_VAZIO = 0
@@ -76,14 +79,14 @@ class MiniMax(Player):
 				pontuacao +=10	
 			
 			pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
-			pontuacaoMov,mov = MiniMax.simulacao(taboleiroSimu,pecaTurno,peca)
+			pontuacaoMov,_ = MiniMax.simulacao(taboleiroSimu,pecaTurno,peca)
 			if pontuacaoMov > maiorPt:
 				melhorMov = movimento
 			elif maiorPt == 0:
 				melhorMov = movimento
 
 			pontuacao += pontuacaoMov
-			if pontuacao >= 2:
+			if pontuacao >= 40:
 				return pontuacao, melhorMov	
 			# break
 		return pontuacao, melhorMov	
@@ -171,9 +174,10 @@ class Taboleiro:
 		retorno = []
 		for i in range(self.matrizTaboleiro.__len__()-1):
 			for e in range(self.matrizTaboleiro[0].__len__()-1):
-				aux = self.movimentoCelula((i,e),peca)
-				if aux != None:
-					retorno.extend(aux)
+				if i+e % 2 == 1:
+					aux = self.movimentoCelula((i,e),peca)
+					if aux != None:
+						retorno.extend(aux)
 		return retorno
 	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UMa celula
 	def movimentoCelula(self, localizacao_cedula,peca):
