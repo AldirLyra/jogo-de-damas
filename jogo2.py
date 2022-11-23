@@ -50,26 +50,28 @@ class Humano(Player):
 class MiniMax(Player):
 	def jogar(self):
 		# taboleiro = Taboleiro()
-		_,movimento = MiniMax.simulacao(self.taboleiro,self.peca,self.peca)
+		_,movimento = MiniMax.simulacao(self.taboleiro,self.peca,self.peca,0)
 		movimento.moverPeca(self.taboleiro,self.peca)
-	def simulacao(taboleiro,pecaTurno,peca):
+	def simulacao(taboleiro,pecaTurno,peca,camada=0):
+		if camada > 15:
+			return 0,None
 		#taboleiro = Taboleiro()
 		taboleiro.verificaVencedor()
 		if taboleiro.status == Status.BRANCA_VENCERAN :
 			if peca == Peca.BRANCA:
-				return 30,None
+				return 20,None
 			else:
 				return -15,None
 		elif taboleiro.status == Status.PRETAS_VENCERAN :
 			if peca == Peca.BRANCA:
 				return -15,None	
 			else:
-				return 30,None
+				return 20,None
 		elif taboleiro.status == Status.EMPATE:
-			return 0 
+			return 0 ,None
 		
 		pontuacao = 0
-		maiorPt = 0 
+		maiorPt = None 
 		melhorMov = None
 		movimentos,isMovObrigatorio = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
 		for movimento in movimentos:
@@ -80,17 +82,21 @@ class MiniMax(Player):
 					pontuacao +=10
 				else:
 					pontuacao -=10
-			movimentos,isMovObrigatoriop = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
+			
+			_,isMovObrigatoriop = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
 			if not(isMovObrigatorio and isMovObrigatoriop): 
+				camada += 1
 				pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
-			pontuacaoMov,_ = MiniMax.simulacao(taboleiroSimu,pecaTurno,peca)
+			pontuacaoMov,_ = MiniMax.simulacao(taboleiroSimu,pecaTurno,peca,camada)
+			if maiorPt == None or melhorMov == None:
+				melhorMov = movimento
+				maiorPt = pontuacaoMov 
 			if pontuacaoMov > maiorPt:
 				melhorMov = movimento
-			elif maiorPt == 0:
-				melhorMov = movimento
+				maiorPt = pontuacaoMov 
 
 			pontuacao += pontuacaoMov
-			if pontuacao >= 40:
+			if pontuacao >= 30:
 				return pontuacao, melhorMov	
 			# break
 		return pontuacao, melhorMov	
@@ -155,11 +161,12 @@ class Taboleiro:
 	def jogo(self):
 		while True:
 			jogador = self.jogadorTurno()
+			print('turno: '+str(self.turno))
 			print(jogador.__class__)
 			print(jogador.peca.name)
-
 			print(self.toString())
 			jogador.jogar()
+			
 			self.proximoTurno()
 			self.verificaVencedor()
 			if self.status != Status.JOGANDO:
@@ -358,5 +365,6 @@ tab.jogadores[1] = Humano(tab,tab.jogadores[1].peca)
 # Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.BRANCA))
 #%%
 tab.jogo()
+input("final do programa" )
 
 
