@@ -321,3 +321,6 @@ tab.jogo()
 # mover.efetuarJogada()
 
 # %%
+mover.efetuarJogada()
+
+# %%
