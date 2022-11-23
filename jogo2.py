@@ -48,7 +48,7 @@ class Humano(Player):
 #         pass
 class MiniMax(Player):
 	def jogar(self):
-		taboleiro = Taboleiro()
+		# taboleiro = Taboleiro()
 		pt , movimento = self.simulacao(self.taboleiro,self.peca,self.peca)
 		movimento.moverPeca(self.taboleiro,self.peca)
 	def simulacao(self,taboleiro,pecaTurno,peca):
@@ -56,29 +56,37 @@ class MiniMax(Player):
 		taboleiro.verificaVencedor()
 		if taboleiro.status == Status.BRANCA_VENCERAN :
 			if peca == Peca.BRANCA:
-				return 1
+				return 30
 			else:
-				return -1
+				return -15
 		elif taboleiro.status == Status.PRETAS_VENCERAN :
 			if peca == Peca.BRANCA:
-				return -1
+				return -15
 			else:
-				return 1
+				return 30
 		elif taboleiro.status == Status.EMPATE:
 			return 0 
 		
 		pontuacao = 0
 		maiorPt = 0 
-		melhorMov = False
+		melhorMov = None
 		movimentos = taboleiro.movimentosTaboleiro(pecaTurno)
 		for movimento in movimentos:
 			taboleiroSimu = copy(taboleiro)
 			movimento.moverPeca(taboleiroSimu,pecaTurno)
+			if movimento.isObrigatorio:
+				pontuacao +=10	
 			pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
 			pontuacaoMov,mov = self.simulacao(taboleiroSimu,pecaTurno,peca)
 			if pontuacaoMov > maiorPt:
 				melhorMov = movimento
+			elif maiorPt == 0:
+				melhorMov = movimento
+
 			pontuacao += pontuacaoMov
+			if pontuacao >= 2:
+				return pontuacao, melhorMov	
+			# break
 		return pontuacao, melhorMov	
 #%%	
 class Movimento():
@@ -321,6 +329,7 @@ class Taboleiro:
 		if PecasPreta == 1 and pecasBrancas == 1:
 			self.status =Status.EMPATE
 		self.status = Status.JOGANDO
+		return self.status
 #%%
 tab = Taboleiro()
 tab.jogadores[0] = Humano(tab,tab.jogadores[0].peca)
