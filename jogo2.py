@@ -82,7 +82,6 @@ class MiniMax(Player):
 					pontuacao +=10
 				else:
 					pontuacao -=10
-			
 			_,isMovObrigatoriop = Movimento.filtraPorObrigatorio(taboleiro.movimentosTaboleiro(pecaTurno))
 			if not(isMovObrigatorio and isMovObrigatoriop): 
 				camada += 1
@@ -116,6 +115,7 @@ class Movimento():
 	def moverPeca(self,taboleiro, peca):
 		lilhaI,colunaI = self.posicaoInicial
 		taboleiro.rotacionarTabuleiro(peca)
+		taboleiro.rotacionarTabuleiro(peca)
 		peca = taboleiro.matrizTaboleiro[lilhaI][colunaI]
 		taboleiro.matrizTaboleiro[lilhaI][colunaI] = Peca.ESPAÇO_VAZIO
 		if self.posicaoCedulaPulada != None:
@@ -145,7 +145,7 @@ class Taboleiro:
 	def __init__(self):
 		self.status = Status.JOGANDO
 		self.turno = 1
-		self.jogadores = [Player(self,Peca.PRETA), Player(self,Peca.BRANCA)]
+		self.jogadores = [Humano(self,Peca.BRANCA),MiniMax(self,Peca.PRETA)]
 		
 		self.matrizTaboleiro = [
 								[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
@@ -166,10 +166,8 @@ class Taboleiro:
 			print(jogador.peca.name)
 			print(self.toString())
 			jogador.jogar()
-			
 			self.proximoTurno()
-			self.verificaVencedor()
-			if self.status != Status.JOGANDO:
+			if self.verificaVencedor() != Status.JOGANDO:
 				return None
 	# RETORNA OS MOVIMENTOS OBRIGATÓRIOS DE UMA PEÇA QUE PODE SER JOGADA EM DETERMINADO TURNO
 	# rotacionando tabuleiro 
@@ -178,24 +176,20 @@ class Taboleiro:
 			self.matrizTaboleiro = rotate_matrix.clockwise(rotate_matrix.clockwise(self.matrizTaboleiro))
 			# self.sentidoTaboleiro = self.sentidoTaboleiro == Peca.BRANCA if Peca.PRETA else Peca.BRANCA
 			self.sentidoTaboleiro = sentido
-			for linha in range(self.matrizTaboleiro.__len__()):
-				self.matrizTaboleiro[linha] =  list(self.matrizTaboleiro[linha])
+		for linha in range(self.matrizTaboleiro.__len__()):
+			self.matrizTaboleiro[linha] =  list(self.matrizTaboleiro[linha])
 	
 	def jogadorTurno(self):
 		return self.jogadores[self.turno % 2]
-	
-	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UM TURNO
-	def movimentosTaboleiro2(self):
-		return self.movimentosTaboleiro(self.jogadorTurno().peca)
 	
 	def movimentosTaboleiro(self,peca):
 		retorno = []
 		for i in range(self.matrizTaboleiro.__len__()-1):
 			for e in range(self.matrizTaboleiro[0].__len__()-1):
-				if (i+e) % 2 == 0:
-					aux = self.movimentoCelula((i,e),peca)
-					if aux != None:
-						retorno.extend(aux)
+				# if (i+e) % 2 == 0:
+				aux = self.movimentoCelula((i,e),peca)
+				if aux != None:
+					retorno.extend(aux)
 		return retorno
 	# RETORNA TODOS OS MOVIMENTOS OBRIGATÓRIOS DE UMa celula
 	def movimentoCelula(self, localizacao_cedula,peca):
@@ -203,6 +197,7 @@ class Taboleiro:
 		linha,coluna = localizacao_cedula
 		
 
+		self.rotacionarTabuleiro(peca)
 		self.rotacionarTabuleiro(peca)
 		array = [Peca.ESPAÇO_VAZIO,peca]
 		# logica para quando a posicao selecionada e uma peça do jogador e nao e uma dama 
@@ -358,9 +353,6 @@ class Taboleiro:
 		return self.status
 #%%
 tab = Taboleiro()
-tab.jogadores[0] = MiniMax(tab,tab.jogadores[0].peca)
-tab.jogadores[1] = Humano(tab,tab.jogadores[1].peca)
-
 # Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.PRETA))
 # Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.BRANCA))
 #%%
