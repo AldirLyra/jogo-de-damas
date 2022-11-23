@@ -37,13 +37,9 @@ class Humano(Player):
 		movimentos = Movimento.filtraPorObrigatorio(movimentos)
 		
 		print("escolha algum dos seguintes movimentos :\n")
-		for i in range(movimentos.__len__()):
-			movimento = movimentos[i]
-			print("======="+str(i)+"=======")
-			print(movimento.imprimir())
+		Movimento.imprimirMovs(movimentos)
 		indice = int(input("digite o indice do movimento:"))
 		movimentos[indice].moverPeca(self.taboleiro,self.peca)		
-	
 # class RedeNeural(Player):
 #     def jogar(self,TABOLEIRO):
 #         pass
@@ -57,14 +53,14 @@ class MiniMax(Player):
 		taboleiro.verificaVencedor()
 		if taboleiro.status == Status.BRANCA_VENCERAN :
 			if peca == Peca.BRANCA:
-				return 30
+				return 30,None
 			else:
-				return -15
+				return -15,None
 		elif taboleiro.status == Status.PRETAS_VENCERAN :
 			if peca == Peca.BRANCA:
-				return -15
+				return -15,None	
 			else:
-				return 30
+				return 30,None
 		elif taboleiro.status == Status.EMPATE:
 			return 0 
 		
@@ -120,7 +116,11 @@ class Movimento():
 			return movimentosObrigatorios
 		else :
 			return movimentos
-		
+	def imprimirMovs(movimentos):
+		for i in range(movimentos.__len__()):
+			movimento = movimentos[i]
+			print("======="+str(i)+"=======")
+			print(movimento.imprimir())
 #%%	
 class Taboleiro:
 
@@ -174,7 +174,7 @@ class Taboleiro:
 		retorno = []
 		for i in range(self.matrizTaboleiro.__len__()-1):
 			for e in range(self.matrizTaboleiro[0].__len__()-1):
-				if i+e % 2 == 1:
+				if (i+e) % 2 == 0:
 					aux = self.movimentoCelula((i,e),peca)
 					if aux != None:
 						retorno.extend(aux)
@@ -343,6 +343,9 @@ tab = Taboleiro()
 tab.jogadores[0] = Humano(tab,tab.jogadores[0].peca)
 tab.jogadores[1] = MiniMax(tab,tab.jogadores[1].peca)
 
+Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.PRETA))
+Movimento.imprimirMovs(tab.movimentosTaboleiro(Peca.BRANCA))
+#%%
 tab.jogo()
 
 
