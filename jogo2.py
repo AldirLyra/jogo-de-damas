@@ -1,9 +1,11 @@
 #%%
 from enum import Flag,auto,Enum
+from copy import copy
 # import enum
 from abc import ABC, abstractmethod
 from IPython.display import display
 import rotate_matrix 
+from infixpy import Seq
 
 class Peca(Flag):
 	ESPAÇO_VAZIO = 0
@@ -29,7 +31,10 @@ class Humano(Player):
 		self.efetuarJogada()
 	
 	def efetuarJogada(self):
-		movimentos = self.taboleiro.movimentosTaboleiro(self.peca)   
+		movimentos = self.taboleiro.movimentosTaboleiro(self.peca)
+		movimentosObrigatorios = Seq(movimentos).filter(lambda x: x.isObrigatorio == True).tolist()
+		if movimentosObrigatorios.__len__() != 0:
+			movimentos = movimentosObrigatorios
 		print("escolha algum dos seguintes movimentos :\n")
 		for i in range(movimentos.__len__()):
 			movimento = movimentos[i]
@@ -45,9 +50,33 @@ class MiniMax(Player):
 	def jogar(self):
 		taboleiro = Taboleiro()
 		taboleiro.movimentosTaboleiro(self.peca)
-	def simulacao():
-		return -1
-
+	def simulacao(self,taboleiro,pecaTurno,peca):
+		taboleiro = Taboleiro()
+		if taboleiro.status == Status.BRANCA_VENCERAN :
+			if peca == Peca.BRANCA:
+				return 1
+			else:
+				return -1
+		elif taboleiro.status == Status.PRETAS_VENCERAN :
+			if peca == Peca.BRANCA:
+				return -1
+			else:
+				return 1
+		elif taboleiro.status == Status.EMPATE:
+			return 0 
+		
+		pontuacao = 0
+		maiorPt = 0 
+		melhorMov = None
+		movimentos = taboleiro.movimentosTaboleiro(pecaTurno)
+		for movimento in movimentos:
+			taboleiroSimu = copy(taboleiro)
+			movimento.moverPeca(taboleiroSimu,pecaTurno)
+			pecaTurno = Peca.PRETA if pecaTurno == Peca.BRANCA else Peca.BRANCA
+			pontuacaoMov = self.simulacao(taboleiroSimu,pecaTurno,peca)
+			if pontuacaoMov > maiorPt:
+				melhorMov = movimento
+		return pontuacaoMov, mov	
 #%%	
 class Movimento():
 	def __init__(self,posicaoInicial,posicaoFinal,posicaoCedulaPulada=None,isObrigatorio=False):
@@ -88,7 +117,7 @@ class Taboleiro:
 								[Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA],
 				  				[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA],
 								[Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA]
@@ -296,31 +325,4 @@ tab.jogadores[1] = Humano(tab,tab.jogadores[1].peca)
 
 tab.jogo()
 
-# %%
 
-# print(tab.movimentosTaboleiro(Peca.BRANCA)[0].imprimir() )
-# tab.rotacionarTabuleiro(Peca.BRANCA)
-# print(tab.toString())
-# tab.movimentosTaboleiro(Peca.BRANCA)[0].moverPeca(tab,Peca.BRANCA)
-# tab.rotacionarTabuleiro(Peca.BRANCA)
-# print(tab.toString())
-# # %%
-
-# tab.rotacionarTabuleiro(Peca.BRANCA)
-# print(tab.toString())
-# print(tab.sentidoTaboleiro)
-
-# tab.rotacionarTabuleiro(Peca.BRANCA)
-# print(tab.toString())
-# print(tab.sentidoTaboleiro)
-
-# tab.rotacionarTabuleiro(Peca.PRETA)
-# print(tab.toString())
-# print(tab.sentidoTaboleiro)
-# # %%
-# mover.efetuarJogada()
-
-# %%
-mover.efetuarJogada()
-
-# %%
