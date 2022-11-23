@@ -22,11 +22,13 @@ class Player(ABC):
 	def __init__(self,taboleiro,peca):
 		self.taboleiro = taboleiro
 		self.peca = peca
-	def jogar(self,TABOLEIRO,Pecas):
+	def jogar(self):
 		pass
-# class Humano(Player):
-#     def jogar(self,TABOLEIRO):
-#         pass
+class Humano(Player):
+    def jogar(self):
+        pass
+    
+    
 # class RedeNeural(Player):
 #     def jogar(self,TABOLEIRO):
 #         pass
@@ -37,6 +39,7 @@ class MiniMax(Player):
 	def simulacao():
 		return -1
 
+#%%	
 class Movimento():
 	def __init__(self,posicaoInicial,posicaoFinal,posicaoCedulaPulada=None,isObrigatorio=False):
 		self.posicaoInicial = posicaoInicial
@@ -49,8 +52,20 @@ class Movimento():
 		movimentostr += "posicaoCedulaPulada:"+ str(self.posicaoCedulaPulada )+"\n"
 		movimentostr += "posicaoFinal:"+ str(self.posicaoFinal) +"\n"
 		return movimentostr
+	def moverPeca(self,peca):
+		tabuleiro = Taboleiro()
+		lilhaI,colunaI = self.posicaoInicial
+
+		tabuleiro.matrizTaboleiro[lilhaI][colunaI] = Peca.ESPAÇO_VAZIO
+		if self.posicaoCedulaPulada != None:
+			lilhaP,colunaP = self.posicaoCedulaPulada
+			tabuleiro.matrizTaboleiro[lilhaP][colunaP] = Peca.ESPAÇO_VAZIO
+		lilhaF,colunaF = self.posicaoFinal
+		tabuleiro.matrizTaboleiro[lilhaF][colunaF] = peca
+
 
 		
+#%%	
 class Taboleiro:
 
 	# Classe para tomar conta do status do jogo
@@ -256,7 +271,22 @@ tab = Taboleiro()
 
 
 # %%
-for i in tab.movimentosTaboleiro(Peca.BRANCA):
+tab.matrizTaboleiro = [
+						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.BRANCA|Peca.DAMA ,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+						[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO]
+						]
+#%%
+for i in tab.movimentosTaboleiro(Peca.B):
 	print(i.imprimir())
+
+# %%
+peca = Peca.PRETA
+damaPreta = Peca.DAMA_PRETA
 
 # %%
