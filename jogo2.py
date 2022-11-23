@@ -53,8 +53,9 @@ class Movimento():
 		movimentostr += "posicaoFinal:"+ str(self.posicaoFinal) +"\n"
 		return movimentostr
 	def moverPeca(self,taboleiro, peca):
-		lilhaI,colunaI = self.posicaoInicial
 
+		lilhaI,colunaI = self.posicaoInicial
+		taboleiro.rotacionarTabuleiro(peca)
 		taboleiro.matrizTaboleiro[lilhaI][colunaI] = Peca.ESPAÇO_VAZIO
 		if self.posicaoCedulaPulada != None:
 			lilhaP,colunaP = self.posicaoCedulaPulada
@@ -77,8 +78,8 @@ class Taboleiro:
 								[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA],
 				  				[Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO],
-								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
+								[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA],
 								[Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO],
 								[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.BRANCA]
@@ -87,11 +88,11 @@ class Taboleiro:
 
 	# RETORNA OS MOVIMENTOS OBRIGATÓRIOS DE UMA PEÇA QUE PODE SER JOGADA EM DETERMINADO TURNO
 	# rotacionando tabuleiro 
-	def rotacionarTabuleiro(self,sentidoTaboleiro):
-		if self.sentidoTaboleiro == sentidoTaboleiro:
+	def rotacionarTabuleiro(self,sentido):
+		if self.sentidoTaboleiro != sentido:
 			self.matrizTaboleiro = rotate_matrix.clockwise(rotate_matrix.clockwise(self.matrizTaboleiro))
 			# self.sentidoTaboleiro = self.sentidoTaboleiro == Peca.BRANCA if Peca.PRETA else Peca.BRANCA
-			self.sentidoTaboleiro = sentidoTaboleiro
+			self.sentidoTaboleiro = sentido
 			for linha in range(self.matrizTaboleiro.__len__()):
 				self.matrizTaboleiro[linha] =  list(self.matrizTaboleiro[linha])
 	
@@ -269,7 +270,23 @@ class Taboleiro:
 tab = Taboleiro()
 # %%
 
-print(tab.toString())
 print(tab.movimentosTaboleiro(Peca.BRANCA)[0].imprimir() )
+tab.rotacionarTabuleiro(Peca.BRANCA)
+print(tab.toString())
 tab.movimentosTaboleiro(Peca.BRANCA)[0].moverPeca(tab,Peca.BRANCA)
+tab.rotacionarTabuleiro(Peca.BRANCA)
+print(tab.toString())
+# %%
+
+tab.rotacionarTabuleiro(Peca.BRANCA)
+print(tab.toString())
+print(tab.sentidoTaboleiro)
+
+tab.rotacionarTabuleiro(Peca.BRANCA)
+print(tab.toString())
+print(tab.sentidoTaboleiro)
+
+tab.rotacionarTabuleiro(Peca.PRETA)
+print(tab.toString())
+print(tab.sentidoTaboleiro)
 # %%
