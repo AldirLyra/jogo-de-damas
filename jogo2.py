@@ -108,15 +108,18 @@ class Movimento():
 		movimentostr += "posicaoFinal:"+ str(self.posicaoFinal) +"\n"
 		return movimentostr
 	def moverPeca(self,taboleiro, peca):
-
 		lilhaI,colunaI = self.posicaoInicial
 		taboleiro.rotacionarTabuleiro(peca)
+		peca = taboleiro.matrizTaboleiro[lilhaI][colunaI]
 		taboleiro.matrizTaboleiro[lilhaI][colunaI] = Peca.ESPAÇO_VAZIO
 		if self.posicaoCedulaPulada != None:
 			lilhaP,colunaP = self.posicaoCedulaPulada
 			taboleiro.matrizTaboleiro[lilhaP][colunaP] = Peca.ESPAÇO_VAZIO
 		lilhaF,colunaF = self.posicaoFinal
-		taboleiro.matrizTaboleiro[lilhaF][colunaF] = peca
+		if lilhaF == 0:
+			taboleiro.matrizTaboleiro[lilhaF][colunaF] = Peca.DAMA|Peca
+		else:
+			taboleiro.matrizTaboleiro[lilhaF][colunaF] = peca
 
 	def filtraPorObrigatorio(movimentos):
 		movimentosObrigatorios = Seq(movimentos).filter(lambda x: x.isObrigatorio == True).tolist()
