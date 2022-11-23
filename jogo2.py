@@ -52,16 +52,15 @@ class Movimento():
 		movimentostr += "posicaoCedulaPulada:"+ str(self.posicaoCedulaPulada )+"\n"
 		movimentostr += "posicaoFinal:"+ str(self.posicaoFinal) +"\n"
 		return movimentostr
-	def moverPeca(self,peca):
-		tabuleiro = Taboleiro()
+	def moverPeca(self,taboleiro, peca):
 		lilhaI,colunaI = self.posicaoInicial
 
-		tabuleiro.matrizTaboleiro[lilhaI][colunaI] = Peca.ESPAÇO_VAZIO
+		taboleiro.matrizTaboleiro[lilhaI][colunaI] = Peca.ESPAÇO_VAZIO
 		if self.posicaoCedulaPulada != None:
 			lilhaP,colunaP = self.posicaoCedulaPulada
-			tabuleiro.matrizTaboleiro[lilhaP][colunaP] = Peca.ESPAÇO_VAZIO
+			taboleiro.matrizTaboleiro[lilhaP][colunaP] = Peca.ESPAÇO_VAZIO
 		lilhaF,colunaF = self.posicaoFinal
-		tabuleiro.matrizTaboleiro[lilhaF][colunaF] = peca
+		taboleiro.matrizTaboleiro[lilhaF][colunaF] = peca
 
 
 		
@@ -93,6 +92,8 @@ class Taboleiro:
 			self.matrizTaboleiro = rotate_matrix.clockwise(rotate_matrix.clockwise(self.matrizTaboleiro))
 			# self.sentidoTaboleiro = self.sentidoTaboleiro == Peca.BRANCA if Peca.PRETA else Peca.BRANCA
 			self.sentidoTaboleiro = sentidoTaboleiro
+			for linha in range(self.matrizTaboleiro.__len__()):
+				self.matrizTaboleiro[linha] =  list(self.matrizTaboleiro[linha])
 	
 	def jogadorTurno(self):
 		return self.jogadores[self.turno % 2]
@@ -228,7 +229,7 @@ class Taboleiro:
 	# def execultarMovimento(self,movimento):
 
 	# 
-	def ImprimirTaboleiro(self):
+	def toString(self):
 		tabstr = ""
 		for i in self.matrizTaboleiro:
 			for e in i:
@@ -266,27 +267,9 @@ class Taboleiro:
 		return Status.JOGANDO
 #%%
 tab = Taboleiro()
-
-
-
-
 # %%
-tab.matrizTaboleiro = [
-						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.BRANCA|Peca.DAMA ,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.PRETA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-						[Peca.ESPAÇO_VAZIO,Peca.BRANCA,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO],
-						[Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO,Peca.ESPAÇO_VAZIO]
-						]
-#%%
-for i in tab.movimentosTaboleiro(Peca.B):
-	print(i.imprimir())
 
-# %%
-peca = Peca.PRETA
-damaPreta = Peca.DAMA_PRETA
-
+print(tab.toString())
+print(tab.movimentosTaboleiro(Peca.BRANCA)[0].imprimir() )
+tab.movimentosTaboleiro(Peca.BRANCA)[0].moverPeca(tab,Peca.BRANCA)
 # %%
