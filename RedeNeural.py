@@ -1,4 +1,4 @@
-from jogo2 import Player
+from jogo import Player
 import pygad
 import pygad.nn
 import pygad.gann
